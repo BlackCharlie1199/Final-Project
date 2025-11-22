@@ -41,3 +41,20 @@ void Hero::draw() {
                    shape->center_y() - gif->height / 2,
                    0);
 }
+
+void Hero::update() {
+    DataCenter *DC = DataCenter::get_instance();
+    if (DC->key_state[ALLEGRO_KEY_W]) {
+        shape->update_center_y(shape->center_y() - speed);
+        state = HeroState::BACK;
+    } else if (DC->key_state[ALLEGRO_KEY_S]) {
+        shape->update_center_y(shape->center_y() + speed);
+        state = HeroState::FRONT;
+    } else if (DC->key_state[ALLEGRO_KEY_A]) {
+        shape->update_center_x(shape->center_x() - speed);
+        state = HeroState::LEFT;
+    } else if (DC->key_state[ALLEGRO_KEY_D]) {
+        shape->update_center_x(shape->center_x() + speed);
+        state = HeroState::RIGHT;
+    }
+}

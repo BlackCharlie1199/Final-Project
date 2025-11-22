@@ -7,6 +7,7 @@
 #include "data/FontCenter.h"
 #include "Player.h"
 #include "Level.h"
+#include "Hero.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -140,6 +141,8 @@ Game::game_init() {
 
 	DC->level->init();
 
+	DC->hero->init();
+
 	// game start
 	background = IC->get(background_img_path);
 	debug_log("Game state: change to START\n");
@@ -210,6 +213,7 @@ Game::game_update() {
 	// If the game is not paused, we should progress update.
 	if(state != STATE::PAUSE) {
 		DC->player->update();
+		DC->hero->update();
 		SC->update();
 		ui->update();
 		if(state != STATE::START) {
@@ -250,6 +254,7 @@ Game::game_draw() {
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
+			DC->hero->draw();
 			ui->draw();
 			OC->draw();
 		}
