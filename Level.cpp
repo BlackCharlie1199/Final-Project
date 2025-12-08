@@ -3,7 +3,9 @@
 #include "Utils.h"
 #include "monsters/Monster.h"
 #include "data/DataCenter.h"
+#include "data/ImageCenter.h"
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
 #include "shapes/Point.h"
 #include "shapes/Rectangle.h"
 #include <array>
@@ -15,9 +17,10 @@ namespace LevelSetting {
 	constexpr char level_path_format[] = "./assets/level/LEVEL%d.txt";
 	//! @brief Grid size for each level.
 	constexpr array<int, 4> grid_size = {
-		40, 40, 40, 40
+		40, 40, 40, 40	
 	};
 	constexpr int monster_spawn_rate = 90;
+	constexpr char block_path[] = "./assets/image/block.png";
 };
 
 void
@@ -41,6 +44,7 @@ Level::init() {
 void
 Level::load_level(int lvl) {
 	DataCenter *DC = DataCenter::get_instance();
+	ImageCenter *IC = ImageCenter::get_instance();
 
 	char buffer[50];
 	sprintf(buffer, LevelSetting::level_path_format, lvl);
@@ -51,6 +55,7 @@ Level::load_level(int lvl) {
 	grid_h = DC->game_field_length / LevelSetting::grid_size[lvl];
 	num_of_monsters.clear();
 	road_path.clear();
+	block = IC->get(LevelSetting::block_path);
 
 	int num;
 	// read total number of monsters & number of each monsters
@@ -97,7 +102,8 @@ Level::draw() {
 		int y1 = j * LevelSetting::grid_size[level];
 		int x2 = x1 + LevelSetting::grid_size[level];
 		int y2 = y1 + LevelSetting::grid_size[level];
-		al_draw_filled_rectangle(x1, y1, x2, y2, al_map_rgb(255, 244, 173));
+		al_draw_rectangle(x1, y1, x2, y2, al_map_rgb(100, 100, 100), 0);
+		al_draw_bitmap(block, x1, y1, 0);
 	}
 }
 

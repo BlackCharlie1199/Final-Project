@@ -3,22 +3,27 @@
 #include "../monsters/Monster.h"
 #include "../towers/Tower.h"
 #include "../towers/Bullet.h"
+#include "../bombs/Bomb.h"
 #include "../Player.h"
 #include "../Hero.h"
+#include "../Frog.h"
+#include "../Boss.h"
 
 void OperationCenter::update() {
 	// Update monsters.
-	_update_monster();
+	//_update_monster();
 	// Update towers.
-	_update_tower();
+	//_update_tower();
 	// Update tower bullets.
-	_update_towerBullet();
+	//_update_towerBullet();
 	// If any bullet overlaps with any monster, we delete the bullet, reduce the HP of the monster, and delete the monster if necessary.
-	_update_monster_towerBullet();
+	//_update_monster_towerBullet();
 	// If any monster reaches the end, hurt the player and delete the monster.
-	_update_monster_player();
+	//_update_monster_player();
 	// As long as monster reaches hero, monster dies
-	_update_monster_hero();
+	//_update_monster_hero();
+	_update_bombs();
+	_update_frog_boss();
 }
 
 void OperationCenter::_update_monster() {
@@ -44,6 +49,27 @@ void OperationCenter::_update_towerBullet() {
 			towerBullets.erase(towerBullets.begin() + i);
 			--i;
 		}
+	}
+}
+
+void OperationCenter::_update_bombs() {
+	std::vector<Bomb*> &bombs = DataCenter::get_instance()->bombs;
+	for (Bomb *bomb : bombs)
+		bomb->update();
+	for (size_t i = 0; i < bombs.size(); i++) {
+		if (bombs[i]->isExploded()) {
+			delete bombs[i];
+			bombs.erase(bombs.begin() + i);
+			--i;
+		}
+	}
+}
+
+// change this function
+void OperationCenter::_update_frog_boss() {
+	DataCenter *DC = DataCenter::get_instance();
+	if (DC->boss->shape->overlap(*(DC->frog->getAttackShape()))) {
+		DC->boss->increaseHitCount();
 	}
 }
 
@@ -101,9 +127,10 @@ void OperationCenter::_update_monster_hero() {
 }
 
 void OperationCenter::draw() {
-	_draw_monster();
-	_draw_tower();
-	_draw_towerBullet();
+	//_draw_monster();
+	//_draw_tower();
+	//_draw_towerBullet();
+	_draw_bomb();
 }
 
 void OperationCenter::_draw_monster() {
@@ -122,4 +149,10 @@ void OperationCenter::_draw_towerBullet() {
 	std::vector<Bullet*> &towerBullets = DataCenter::get_instance()->towerBullets;
 	for(Bullet *towerBullet : towerBullets)
 		towerBullet->draw();
+}
+
+void OperationCenter::_draw_bomb() {
+	std::vector<Bomb*> &bombs = DataCenter::get_instance()->bombs;
+	for (Bomb *bomb : bombs)
+		bomb->draw();
 }

@@ -5,12 +5,15 @@
 #include "../monsters/Monster.h"
 #include "../towers/Tower.h"
 #include "../towers/Bullet.h"
-
+#include "../Hero.h"
+#include "../Frog.h"
+#include "../Boss.h"
+#include "../bombs/Bomb.h"
 // fixed settings
 namespace DataSetting {
 	constexpr double FPS = 60;
-	constexpr int window_width = 800;
-	constexpr int window_height = 600;
+	constexpr int window_width = 1850;
+	constexpr int window_height = 1080;
 	constexpr int game_field_length = 600;
 }
 
@@ -26,11 +29,17 @@ DataCenter::DataCenter() {
 	memset(prev_mouse_state, false, sizeof(prev_mouse_state));
 	player = new Player();
 	level = new Level();
+	hero = new Hero();
+	frog = new Frog();
+	boss = new Boss();
 }
 
 DataCenter::~DataCenter() {
 	delete player;
 	delete level;
+	delete hero;
+	delete boss;
+	delete frog;
 	for(Monster *&m : monsters) {
 		delete m;
 	}
@@ -38,6 +47,9 @@ DataCenter::~DataCenter() {
 		delete t;
 	}
 	for(Bullet *&b : towerBullets) {
+		delete b;
+	}
+	for (Bomb *&b : bombs) {
 		delete b;
 	}
 }

@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Level.h"
 #include "Hero.h"
+#include "Frog.h"
+#include "Boss.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -19,7 +21,8 @@
 // fixed settings
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
-constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
+constexpr char background_img_path[] = "./assets/image/background.png";
+constexpr char block_img_path[] = "../assets/image/block.png";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
 
 /**
@@ -136,12 +139,14 @@ Game::game_init() {
 	// init font setting
 	FC->init();
 
-	ui = new UI();
-	ui->init();
+	//ui = new UI();
+	//ui->init();
 
-	DC->level->init();
+	//DC->level->init();
 
-	DC->hero->init();
+	DC->frog->init();
+
+	DC->boss->init();
 
 	// game start
 	background = IC->get(background_img_path);
@@ -169,7 +174,7 @@ Game::game_update() {
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 			if(!is_played) {
 				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				DC->level->load_level(1);
+				//DC->level->load_level(1);
 				is_played = true;
 			}
 
@@ -185,6 +190,7 @@ Game::game_update() {
 				BGM_played = true;
 			}
 
+			/*
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
 				SC->toggle_playing(background);
 				debug_log("<Game> state: change to PAUSE\n");
@@ -198,6 +204,7 @@ Game::game_update() {
 				debug_log("<Game> state: change to END\n");
 				state = STATE::END;
 			}
+			*/
 			break;
 		} case STATE::PAUSE: {
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
@@ -212,12 +219,13 @@ Game::game_update() {
 	}
 	// If the game is not paused, we should progress update.
 	if(state != STATE::PAUSE) {
-		DC->player->update();
-		DC->hero->update();
+		//DC->player->update();
+		DC->frog->update();
+		DC->boss->update();
 		SC->update();
-		ui->update();
+		//ui->update();
 		if(state != STATE::START) {
-			DC->level->update();
+			//DC->level->update();
 			OC->update();
 		}
 	}
@@ -233,7 +241,7 @@ Game::game_update() {
 void
 Game::game_draw() {
 	DataCenter *DC = DataCenter::get_instance();
-	OperationCenter *OC = OperationCenter::get_instance();
+	//OperationCenter *OC = OperationCenter::get_instance();
 	FontCenter *FC = FontCenter::get_instance();
 
 	// Flush the screen first.
@@ -241,22 +249,13 @@ Game::game_draw() {
 	if(state != STATE::END) {
 		// background
 		al_draw_bitmap(background, 0, 0, 0);
-		if(DC->game_field_length < DC->window_width)
-			al_draw_filled_rectangle(
-				DC->game_field_length, 0,
-				DC->window_width, DC->window_height,
-				al_map_rgb(100, 100, 100));
-		if(DC->game_field_length < DC->window_height)
-			al_draw_filled_rectangle(
-				0, DC->game_field_length,
-				DC->window_width, DC->window_height,
-				al_map_rgb(100, 100, 100));
 		// user interface
 		if(state != STATE::START) {
-			DC->level->draw();
-			DC->hero->draw();
-			ui->draw();
-			OC->draw();
+			//DC->level->draw();
+			DC->frog->draw();
+			DC->boss->draw();
+			//ui->draw();
+			//OC->draw();
 		}
 	}
 	switch(state) {

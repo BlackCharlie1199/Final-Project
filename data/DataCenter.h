@@ -7,11 +7,16 @@
 #include <allegro5/mouse.h>
 #include "../shapes/Point.h"
 
+// forward declaration
 class Player;
 class Level;
 class Monster;
 class Tower;
 class Bullet;
+class Hero;
+class Frog;
+class Bomb;
+class Boss;
 
 /**
  * @brief Stores generic global data and relatively small data structures.
@@ -92,6 +97,14 @@ public:
 	 * @see Bullet
 	 */
 	std::vector<Bullet*> towerBullets;
+	/**
+	 * @brief Pointer of hero obj
+	 * @see Hero 
+	 */
+	Hero *hero;
+	Frog *frog;
+	Boss *boss;
+	std::vector<Bomb*> bombs;
 private:
 	DataCenter();
 };

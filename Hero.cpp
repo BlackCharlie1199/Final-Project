@@ -6,7 +6,8 @@
 
 namespace HeroSetting
 {
-    static constexpr char gif_root_path[50] = "./assets/gif/Hero/";
+    static constexpr double gravity = 5;
+    static constexpr char gif_root_path[50] = "./assets/gif/Hero";
     static constexpr char gif_postfix[][10] = {
         "left",
         "right",
