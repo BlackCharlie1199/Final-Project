@@ -24,9 +24,11 @@ namespace FrogSetting {
     constexpr double jump_gravity = ((2 * jump_height) / (jump_time_to_peak * jump_time_to_peak));
     constexpr double fall_gravity = ((2 * jump_height) / (jump_time_to_descent * jump_time_to_descent));
 
-    constexpr int attack_w = 60;
-    constexpr int attack_h = 60;
-    constexpr int attack_offset = 50;
+    constexpr int attack_offset = 80;
+
+    constexpr double move_max_speed = 10;
+    constexpr double move_acc = 1;
+    constexpr double move_friction = 0.8;
 }
 
 void Frog::init(){
@@ -89,14 +91,14 @@ void Frog::update(){
     bool reachRight = shape->center_x() + gif->width / 2 - 20 >= DC->window_width;
 
     if(DC->key_state[ALLEGRO_KEY_A] && !reachLeft){
-        speedX = -10;
+        speedX = std::max(speedX - FrogSetting::move_acc, -1 * FrogSetting::move_max_speed);
         if (state != FrogState::WALLJUMP) facing = Dir::LEFT;
         if (!inAir) {
             state = FrogState::RUN;
         }
         horMove = true;
     } else if(DC->key_state[ALLEGRO_KEY_D] && !reachRight){
-        speedX = 10;
+        speedX = std::min(speedX + FrogSetting::move_acc, FrogSetting::move_max_speed);
         if (state != FrogState::WALLJUMP) facing = Dir::RIGHT;
         if (!inAir) {
             state = FrogState::RUN;
@@ -104,6 +106,16 @@ void Frog::update(){
         horMove = true;
     } else {
         speedX = 0;
+    }
+
+    if (!horMove) {
+        if (speedX > 0) {
+            speedX -= FrogSetting::move_friction;
+            if (speedX < 0) speedX = 0;
+        } else if (speedX < 0) {
+            speedX += FrogSetting::move_friction;
+            if (speedX > 0) speedX = 0;
+        }
     }
 
     bool onLeftWall = (reachLeft && shape->center_y() <= DC->window_height / 2);
@@ -228,14 +240,21 @@ void Frog::draw(){
             case Dir::DOWN:  drawY += 65; break;
         }
         al_draw_rotated_bitmap(bmp, w / 2, h / 2, drawX, drawY, angle, flags);
-        //al_draw_rectangle(attackBox->center_x() - 30, attackBox->center_y() - 30, 
-                        //attackBox->center_x() + 30, attackBox->center_y() + 30, 
-                        //al_map_rgb(255, 0, 0), 2);
+        al_draw_rectangle(attackBox->center_x() - 30, attackBox->center_y() - 30, 
+                        attackBox->center_x() + 30, attackBox->center_y() + 30, 
+                        al_map_rgb(255, 0, 0), 2);
         ++currentFrame;
         currentFrame %= FrogSetting::slashFrames * frameNum;
     }
 }
 
 void Frog::bounce(){
-    
+    if (attackDir == Dir::DOWN) {
+        doubleJump = false;
+        speedY = FrogSetting::jump_velocity;
+        speedX *= -1;
+        state = FrogState::JUMP;
+    } else {
+        speedX -= 10;
+    }
 }

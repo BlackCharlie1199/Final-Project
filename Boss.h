@@ -18,20 +18,22 @@ public:
     void init();
     void update();
     void draw() override;
-    void increaseHitCount() { 
-        if (al_get_timer_count(invincibleTimer) >= 100) {
-            ++hitCount; 
-            if (hitCount % 5 == 0) {
-                al_set_timer_count(invincibleTimer, 0);
-                state = BossState::HIT;
-            }
+    void hit(int sourceX) { 
+        if (state == BossState::HIT) return;
+        ++hitCount; 
+        state = BossState::HIT;
+
+        if (sourceX < shape->center_x()) {
+            speedX = 10;
+        } else {
+            speedX = -10;
         }
+        speedY = -10;
     };
 private:
     BossState state = BossState::IDLE;
     std::map<BossState,std::string>gifPath;
-    double speed = 5;
-    ALLEGRO_TIMER *invincibleTimer;
+    double speedX, speedY;
     int hitCount = 0;
 };
 

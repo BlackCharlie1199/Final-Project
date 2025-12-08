@@ -31,20 +31,13 @@ Bomb::Bomb(const Point &p) {
     ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
     shape.reset(new Circle{p.x, p.y, static_cast<double>(gif->width)});
     explode = false;
-    explodeTime = al_create_timer(1 / DC->FPS);
 }
 
 void Bomb::update() {
     DataCenter *DC = DataCenter::get_instance();
     GIFCenter *GIFC = GIFCenter::get_instance();
     if (DC->mouse_state[2]) {
-        explode = true;
-        al_start_timer(explodeTime);
-    }
-    if (explode) {
         state = BombState::EXPLODE;
-        ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
-        gif->loop = 1;
     }
 }
 
@@ -55,13 +48,5 @@ void Bomb::draw(){
                    shape->center_x() - gif->width/2,
                    shape->center_y() - gif->height/2,
                    0);
-}
-
-bool Bomb::isExploded() {
-    if (explode) {
-        GIFCenter *GIFC = GIFCenter::get_instance();
-        ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
-        return gif->done;
-    }
-    return false;
+    if (gif->display_index == gif->frames_count) explode = true;
 }

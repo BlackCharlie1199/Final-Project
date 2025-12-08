@@ -27,33 +27,42 @@ void Boss::init(){
                               DC->window_height/2,
                               DC->window_width/2 + gif->width,
                               DC->window_height/2 + gif->height});
-    invincibleTimer = al_create_timer(1 / DC->FPS);
-    al_set_timer_count(invincibleTimer, 50);
-    al_start_timer(invincibleTimer);
+    speedX = 0, speedY = 0;
 }
 
 void Boss::update(){
-    //DataCenter *DC = DataCenter::get_instance();
-    /*if(DC->key_state[ALLEGRO_KEY_W]){
-        shape->update_center_y(shape->center_y() - speed);
-        state = FrogState::JUMP;
+    DataCenter *DC = DataCenter::get_instance();
+
+    constexpr double gravity = 0.5;
+    constexpr double fricition = 0.95;
+
+    if (shape->center_y() < DC->window_height / 2) {
+        speedY += gravity;
+    } else if (speedY > 0) {
+        speedY = 0;
+        shape->update_center_y(DC->window_height / 2);
     }
-    else if(DC->key_state[ALLEGRO_KEY_A]){
-        shape->update_center_x(shape->center_x() - speed);
-        state = FrogState::RUN;
-    }
-    else if(DC->key_state[ALLEGRO_KEY_S]){
-        shape->update_center_y(shape->center_y() + speed);
-        state = HeroState::FRONT;
-    }*/
-   state = BossState::IDLE;
+    
+    speedX *= fricition;
+
+    shape->update_center_x(shape->center_x() + speedX);
+    shape->update_center_y(shape->center_y() + speedY);
+
+    if (state == BossState::HIT) return;
+    state = BossState::IDLE;
 }
 
 void Boss::draw(){
     GIFCenter *GIFC = GIFCenter::get_instance();
     ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
+
     algif_draw_gif(gif,
                    shape->center_x() - gif->width/2,
                    shape->center_y() - gif->height/2,
                    0);
+    if (state == BossState::HIT) {
+        if (gif->display_index == gif->frames_count - 1) {
+            state = BossState::IDLE;
+        }
+    }
 }

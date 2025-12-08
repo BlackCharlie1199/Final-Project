@@ -31,8 +31,8 @@ public:
     void draw() override;
 
     Shape* getAttackShape() {return attackBox.get(); }
-    bool slashEnd() {return currentFrame % 4 == 0; }
-    void bounce(){}
+    bool slashEnd() {return currentFrame / 4 == 0 && currentFrame > 3; }
+    void bounce();
 private:
     FrogState state = FrogState::IDLE;
     std::map<FrogState,std::string>gifPath;

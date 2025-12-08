@@ -69,7 +69,8 @@ void OperationCenter::_update_bombs() {
 void OperationCenter::_update_frog_boss() {
 	DataCenter *DC = DataCenter::get_instance();
 	if (DC->boss->shape->overlap(*(DC->frog->getAttackShape()))) {
-		DC->boss->increaseHitCount();
+		DC->boss->hit(DC->frog->shape->center_x());
+		DC->frog->bounce();
 	}
 }
 
