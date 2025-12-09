@@ -54,7 +54,10 @@ void Frog::init(){
                               DC->window_height/2,
                               DC->window_width/2 + gif->width,
                               DC->window_height/2 + gif->height});
-    attackBox.reset(new Rectangle{0, 0, 0, 0});
+    attackBox.reset(new Rectangle{DC->window_width / 2, 
+                                  DC->window_height / 2, 
+                                  DC->window_width / 2 + 110, 
+                                  DC->window_height / 2 + 110});
     attack = false;
     currentFrame = 0;
     doubleJump = false;
@@ -153,6 +156,7 @@ void Frog::update(){
     // attack part
     if (DC->mouse_state[1] && currentFrame == 0 && !DC->prev_mouse_state[1]) {
         attack = true;
+        hasHit = false;
         if (DC->key_state[ALLEGRO_KEY_W]) {
             attackDir = Dir::UP;
         } else if (DC->key_state[ALLEGRO_KEY_S]) {
@@ -170,10 +174,10 @@ void Frog::update(){
         double attackCenterY = shape->center_y() + 10;
 
         switch (attackDir) {
-            case Dir::RIGHT: attackCenterX += FrogSetting::attack_offset + 15; break;
-            case Dir::LEFT : attackCenterX -= FrogSetting::attack_offset + 15; break;
+            case Dir::RIGHT: attackCenterX += FrogSetting::attack_offset + 10; break;
+            case Dir::LEFT : attackCenterX -= FrogSetting::attack_offset + 10; break;
             case Dir::UP:    attackCenterY -= FrogSetting::attack_offset + 30; break;
-            case Dir::DOWN : attackCenterY += FrogSetting::attack_offset + 15; break;
+            case Dir::DOWN : attackCenterY += FrogSetting::attack_offset + 10; break;
         }
 
         attackBox->update_center_x(attackCenterX);
@@ -240,8 +244,8 @@ void Frog::draw(){
             case Dir::DOWN:  drawY += 65; break;
         }
         al_draw_rotated_bitmap(bmp, w / 2, h / 2, drawX, drawY, angle, flags);
-        al_draw_rectangle(attackBox->center_x() - 30, attackBox->center_y() - 30, 
-                        attackBox->center_x() + 30, attackBox->center_y() + 30, 
+        al_draw_rectangle(attackBox->center_x() - 60, attackBox->center_y() - 60, 
+                        attackBox->center_x() + 60, attackBox->center_y() + 60, 
                         al_map_rgb(255, 0, 0), 2);
         ++currentFrame;
         currentFrame %= FrogSetting::slashFrames * frameNum;
@@ -249,12 +253,15 @@ void Frog::draw(){
 }
 
 void Frog::bounce(){
+    hasHit = true;
     if (attackDir == Dir::DOWN) {
         doubleJump = false;
         speedY = FrogSetting::jump_velocity;
         speedX *= -1;
         state = FrogState::JUMP;
-    } else {
-        speedX -= 10;
+    } else if (attackDir == Dir::LEFT) {
+        speedX += 20;
+    } else if (attackDir == Dir::RIGHT) {
+        speedX -= 20;
     }
 }

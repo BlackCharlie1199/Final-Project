@@ -18,18 +18,7 @@ public:
     void init();
     void update();
     void draw() override;
-    void hit(int sourceX) { 
-        if (state == BossState::HIT) return;
-        ++hitCount; 
-        state = BossState::HIT;
-
-        if (sourceX < shape->center_x()) {
-            speedX = 10;
-        } else {
-            speedX = -10;
-        }
-        speedY = -10;
-    };
+    void hit(int sourceX);
 private:
     BossState state = BossState::IDLE;
     std::map<BossState,std::string>gifPath;

@@ -33,6 +33,8 @@ public:
     Shape* getAttackShape() {return attackBox.get(); }
     bool slashEnd() {return currentFrame / 4 == 0 && currentFrame > 3; }
     void bounce();
+    bool isAttack() {return attack; }
+    bool slashHit() {return hasHit; }
 private:
     FrogState state = FrogState::IDLE;
     std::map<FrogState,std::string>gifPath;
@@ -40,6 +42,7 @@ private:
     int currentFrame;
     double speedX = 0, speedY = 0;
     bool attack, jump, doubleJump;
+    bool hasHit = false;
     
     Dir facing = Dir::RIGHT;
     Dir attackDir = Dir::RIGHT;

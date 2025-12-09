@@ -66,3 +66,16 @@ void Boss::draw(){
         }
     }
 }
+
+void Boss::hit(int sourceX) { 
+    if (state == BossState::HIT) return;
+    ++hitCount; 
+    state = BossState::HIT;
+
+    if (sourceX < shape->center_x()) {
+        speedX = 10;
+    } else {
+        speedX = -10;
+    }
+    speedY = -10;
+};
