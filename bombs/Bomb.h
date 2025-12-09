@@ -16,7 +16,7 @@ enum class BombState {
 class Bomb : public Object
 {
 public:
-	Bomb(const Point &p);
+	Bomb(const Point &p, double speedX);
     void update();
     void draw() override;
     bool isExploded() {return explode;};

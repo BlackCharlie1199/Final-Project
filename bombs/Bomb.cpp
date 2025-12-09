@@ -18,9 +18,8 @@ namespace BombSetting {
     constexpr double descend_gravity = ((2 * ascend_height) / (descend_time * descend_time));
 }
 
-Bomb::Bomb(const Point &p) {
+Bomb::Bomb(const Point &p, double speedX): speedX{speedX} {
     GIFCenter *GIFC = GIFCenter::get_instance();
-    DataCenter *DC = DataCenter::get_instance();
     for(int i=0;i < static_cast<int>(BombState::BOMBSTATE_NUM);++i){
         char buffer[60];
         sprintf(buffer,"%s/bomb_%s.gif",
@@ -31,14 +30,43 @@ Bomb::Bomb(const Point &p) {
     ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
     shape.reset(new Circle{p.x, p.y, static_cast<double>(gif->width)});
     explode = false;
+    speedY = BombSetting::ascend_velocity;
 }
 
 void Bomb::update() {
     DataCenter *DC = DataCenter::get_instance();
     GIFCenter *GIFC = GIFCenter::get_instance();
+    ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
+    double r = gif->width / 2;
     if (DC->mouse_state[2]) {
         state = BombState::EXPLODE;
     }
+
+    if (shape->center_y() < DC->window_height / 2) {
+        double g = BombSetting::ascend_gravity;
+        if (speedY >= 0) {
+            g = BombSetting::descend_gravity;
+        }
+        speedY += g;
+    } else {
+        shape->update_center_y(DC->window_height / 2);
+        speedY *= - 0.5;
+
+        if (std::abs(speedY) <= 2) {
+            speedY = 0;
+            speedX *= 0.9;
+        }
+    }
+
+    if (shape->center_x() - r < 0) {
+        shape->update_center_x(0 + r);
+        speedX *= -1;
+    } else if (shape->center_x() + r > DC->window_width) {
+        shape->update_center_x(DC->window_width - r);
+        speedX *= -1;
+    }
+    shape->update_center_x(shape->center_x() + speedX);
+    shape->update_center_y(shape->center_y() + speedY);
 }
 
 void Bomb::draw(){
@@ -48,5 +76,5 @@ void Bomb::draw(){
                    shape->center_x() - gif->width/2,
                    shape->center_y() - gif->height/2,
                    0);
-    if (gif->display_index == gif->frames_count) explode = true;
+    if (state == BombState::EXPLODE && gif->display_index == gif->frames_count - 1) explode = true;
 }

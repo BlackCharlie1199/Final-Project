@@ -241,7 +241,7 @@ Game::game_update() {
 void
 Game::game_draw() {
 	DataCenter *DC = DataCenter::get_instance();
-	//OperationCenter *OC = OperationCenter::get_instance();
+	OperationCenter *OC = OperationCenter::get_instance();
 	FontCenter *FC = FontCenter::get_instance();
 
 	// Flush the screen first.
@@ -255,7 +255,7 @@ Game::game_draw() {
 			DC->frog->draw();
 			DC->boss->draw();
 			//ui->draw();
-			//OC->draw();
+			OC->draw();
 		}
 	}
 	switch(state) {
